@@ -49,7 +49,31 @@
 ![](./LMDeploy8.png)
 
 
-### 动手实践 - 安装、部署、量化   
+### 动手实践 - 安装、部署、量化     
+
+#### 1.LMDeploy环境部署     
+
+1.1 创建开发机
+选择镜像`Cuda12.2-conda`；选择`10% A100*1GPU`；点击“立即创建”。   
+
+1.2 创建conda环境
+InternStudio上提供了快速创建conda环境的方法。打开命令行终端，创建一个名为`lmdeploy`的环境：   
+```
+studio-conda -t lmdeploy -o pytorch-2.1.2
+```   
+
+1.3 安装LMDeploy   
+激活刚刚创建的虚拟环境:   
+```
+conda activate lmdeploy
+```   
+
+安装0.3.0版本的lmdeploy:   
+```
+pip install lmdeploy[all]==0.3.0
+```   
+
+ 
 
 
 
