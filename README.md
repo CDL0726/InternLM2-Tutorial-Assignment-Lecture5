@@ -129,10 +129,56 @@ ln -s /root/share/new_models/Shanghai_AI_Laboratory/internlm2-chat-1_8b /root/
 ls
 ```
 
+2.3 使用Transformer库运行模型   
+
+Transformer库是Huggingface社区推出的用于运行HF模型的官方库。   
+
+在2.2中，我们已经下载好了InternLM2-Chat-1.8B的HF模型。下面我们先用Transformer来直接运行InternLM2-Chat-1.8B模型，后面对比一下LMDeploy的使用感受。   
+
+打开VSCode   
+
+在终端中输入如下指令，新建`pipeline_transformer.py`。   
+```
+touch /root/pipeline_transformer.py
+```
+
+回车执行指令，可以看到侧边栏多出了pipeline_transformer.py文件，点击打开。后文中如果要创建其他新文件，也是采取类似的操作。   
+
+内容复制粘贴进入`pipeline_transformer.py`  按`Ctrl+S`键保存   
+
+回到终端，激活conda环境。   
+```
+python /root/pipeline_transformer.py
+```
+得到输出：   
+![](./LMDeploy11.png)   
+**感受`Transformer`推理速度很慢，二轮对话完成用时约80秒**   
+
+2.4 使用LMDeploy与模型对话   
+
+如何应用LMDeploy直接与模型进行对话。
+
+首先激活创建好的conda环境：
+```
+conda activate lmdeploy
+```
+
+使用LMDeploy与模型进行对话的通用命令格式为：   
+```
+lmdeploy chat [HF格式模型路径/TurboMind格式模型路径]
+```
+
+例如，您可以执行如下命令运行下载的1.8B模型：   
+```
+lmdeploy chat /root/internlm2-chat-1_8b
+```
+![](./LMDeploy12.png)     
+
+可以与InternLM2-Chat-1.8B大模型对话了。比如输入“请给我讲一个小故事吧”，然后按两下回车键。   
+![](./LMDeploy13.png)  
+**速度明显比原生Transformer快**
 
 
-
-    
 
 
  
