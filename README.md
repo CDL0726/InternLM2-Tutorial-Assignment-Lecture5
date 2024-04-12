@@ -33,7 +33,29 @@
 
 ### **LMDeploy**   
 
+- LMDeploy涵盖了LLM任务的全套轻量化、部署和服务解决方案；
+- 核心功能：
+    - 模型高效推理
+    - 模型量化压缩
+    - 服务化部署
+- 性能提长
+- 支持多模态
+- LMDeploy支持多模型部署
+  
+![](./LMDeploy4.png)
+![](./LMDeploy5.png)
+![](./LMDeploy6.png)   
+![](./LMDeploy7.png)
+![](./LMDeploy8.png)
+![](./LMDeploy9.png)
+
+### 动手实践 - 安装、部署、量化   
+
+
+
+
     
+
 
  
   
