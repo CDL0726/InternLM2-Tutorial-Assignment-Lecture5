@@ -189,17 +189,35 @@ lmdeploy chat /root/internlm2-chat-1_8b
  ## 第4课 作业     
 
 ### 基础作业（结营必做）
-完成以下任务，并将实现过程记录截图：
+完成以下任务，并将实现过程记录截图：    
+
 - 配置lmdeploy运行环境
-  - Dennis作业，详见笔记1.LMDeploy环境部署：
-  - 创建`conda`环境 `studio-conda -t lmdeploy -o pytorch-2.1.2`
-  - 激活刚创建的虚拟环境 `conda activate lmdeploy`
-  - 安装0.3.0版本的lmdeploy`pip install lmdeploy[all]==0.3.0`
+  
+  Dennis作业，详见笔记1.LMDeploy环境部署：
+  - 创建`conda`环境： `studio-conda -t lmdeploy -o pytorch-2.1.2`
+  - 激活刚创建的虚拟环境： `conda activate lmdeploy`
+  - 安装0.3.0版本的lmdeploy：`pip install lmdeploy[all]==0.3.0`
+    ![](./LMDeploy9.png)
     
 - 下载internlm-chat-1.8b模型
-  -  
+  
+  Dennis作业，详见笔记2.LMDeploy模型对话(chat)：
+  -  查看开发机的共享目录中准备好了常用的预训练模型：`ls /root/share/new_models/Shanghai_AI_Laboratory/`
+  -  进入存放模型的目录: `cd ~`
+  -  执行如下指令由开发机的共享目录软链接或拷贝模型：`ln -s /root/share/new_models/Shanghai_AI_Laboratory/internlm2-chat-1_8b /root/
+# cp -r /root/share/new_models/Shanghai_AI_Laboratory/internlm2-chat-1_8b /root/`    
+  - 运行“ls”命令查看已下载的`internlm2-chat-1_8b`
+  - 下载截图：
+     ![](./LMDeploy10.png)
+
 - 以命令行方式与模型对话
- 
+  - Dennis作业详见 笔记2.4 使用LMDeploy与模型对话：
+  - 激活创建好的conda环境：`conda activate lmdeploy`
+  - 执行如下命令运行下载的1.8B模型：`lmdeploy chat /root/internlm2-chat-1_8b`
+  - 与模型对话截图：
+     ![](./LMDeploy12.png)
+     ![](./LMDeploy13.png)
+     
  ### 进阶作业   
  
 完成以下任务，并将实现过程记录截图：
