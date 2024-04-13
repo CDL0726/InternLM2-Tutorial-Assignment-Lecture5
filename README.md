@@ -51,7 +51,7 @@
 
 ### 动手实践 - 安装、部署、量化     
 
-#### 1. LMDeploy环境部署     
+#### **1. LMDeploy环境部署**     
 
 1.1 创建开发机
 选择镜像`Cuda12.2-conda`；选择`10% A100*1GPU`；点击“立即创建”。   
@@ -73,7 +73,7 @@ conda activate lmdeploy
 pip install lmdeploy[all]==0.3.0
 ```   
 
-#### 2. LMDeploy模型对话(chat)    
+#### **2. LMDeploy模型对话(chat)**    
 
 2.1 Huggingface与TurboMind   
 
@@ -185,7 +185,7 @@ lmdeploy chat /root/internlm2-chat-1_8b
 lmdeploy chat -h
 ```
 
-#### 3. LMDeploy模型量化(lite)   
+#### **3. LMDeploy模型量化(lite)**   
 
 主要介绍如何对模型进行量化。主要包括 KV8量化和W4A16量化。   
 
@@ -286,6 +286,45 @@ lmdeploy chat /root/internlm2-chat-1_8b-4bit --model-format awq --cache-max-entr
 **拓展内容**：有关LMDeploy的lite功能的更多参数可通过-h命令查看。
 ```
  lmdeploy lite -h
+```
+
+#### **4. LMDeploy服务(serve)**   
+
+在第二章和第三章，我们都是在本地直接推理大模型，这种方式成为本地部署。   
+在生产环境下，我们有时会将大模型封装为API接口服务，供客户端访问。
+
+ 看下面一张架构图：   
+
+ ![](./LMDeploy20.png)   
+
+ 我们把从架构上把整个服务流程分成下面几个模块。   
+
+ - **Model Inference/Server** 模型推理/服务。主要提供模型本身的推理，一般来说可以和具体业务解耦，专注模型推理本身性能的优化。可以以模块、API等多种方式提供。
+ - **API Server**。中间协议层，把后端推理/服务通过HTTP，gRPC或其他形式的接口，供前端调用。
+ - **Client**。可以理解为前端，与用户交互的地方。通过通过网页端/命令行去调用API接口，获取模型推理/服务。
+
+以上的划分是一个相对完整的模型，但在实际中这并不是绝对的。比如可以把“模型推理”和“API Server”合并，有的甚至是三个流程打包在一起提供服务。    
+
+**4.1 启动API服务器**
+
+通过以下命令启动API服务器，推理`internlm2-chat-1_8b`模型：   
+```
+lmdeploy serve api_server \
+    /root/internlm2-chat-1_8b \
+    --model-format hf \
+    --quant-policy 0 \
+    --server-name 0.0.0.0 \
+    --server-port 23333 \
+    --tp 1
+```
+
+其中，model-format、quant-policy这些参数是与第三章中量化推理模型一致的；server-name和server-port表示API服务器的服务IP与服务端口；tp参数表示并行数量（GPU数量）。
+
+通过运行以上指令，我们成功启动了API服务器，请勿关闭该窗口，后面我们要新建客户端连接该服务。    
+
+可以通过运行一下指令，查看更多参数及使用方法：    
+```
+lmdeploy serve api_server -h
 ```
 
 
