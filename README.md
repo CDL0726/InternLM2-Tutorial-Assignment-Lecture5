@@ -204,8 +204,11 @@ lmdeploy chat /root/internlm2-chat-1_8b
   Dennis作业，详见笔记2.LMDeploy模型对话(chat)：
   -  查看开发机的共享目录中准备好了常用的预训练模型：`ls /root/share/new_models/Shanghai_AI_Laboratory/`
   -  进入存放模型的目录: `cd ~`
-  -  执行如下指令由开发机的共享目录软链接或拷贝模型：`ln -s /root/share/new_models/Shanghai_AI_Laboratory/internlm2-chat-1_8b /root/
-# cp -r /root/share/new_models/Shanghai_AI_Laboratory/internlm2-chat-1_8b /root/`    
+  -  执行如下指令由开发机的共享目录软链接或拷贝模型：
+    ```
+    ln -s /root/share/new_models/Shanghai_AI_Laboratory/internlm2-chat-1_8b /root/
+     # cp -r /root/share/new_models/Shanghai_AI_Laboratory/internlm2-chat-1_8b /root/
+    ```    
   - 运行“ls”命令查看已下载的`internlm2-chat-1_8b`
   - 下载截图：
      ![](./LMDeploy10.png)
