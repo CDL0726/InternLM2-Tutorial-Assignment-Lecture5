@@ -51,7 +51,7 @@
 
 ### 动手实践 - 安装、部署、量化     
 
-#### 1.LMDeploy环境部署     
+#### 1. LMDeploy环境部署     
 
 1.1 创建开发机
 选择镜像`Cuda12.2-conda`；选择`10% A100*1GPU`；点击“立即创建”。   
@@ -73,7 +73,7 @@ conda activate lmdeploy
 pip install lmdeploy[all]==0.3.0
 ```   
 
-#### 2.LMDeploy模型对话(chat)    
+#### 2. LMDeploy模型对话(chat)    
 
 2.1 Huggingface与TurboMind   
 
@@ -178,7 +178,14 @@ lmdeploy chat /root/internlm2-chat-1_8b
 ![](./LMDeploy13.png)  
 **速度明显比原生Transformer快**
 
-#### 3.LMDeploy模型量化(lite)   
+输入“exit”并按两下回车，可以退出对话。   
+
+**拓展内容**：有关LMDeploy的chat功能的更多参数可通过-h命令查看。
+```
+lmdeploy chat -h
+```
+
+#### 3. LMDeploy模型量化(lite)   
 
 主要介绍如何对模型进行量化。主要包括 KV8量化和W4A16量化。   
 
@@ -187,12 +194,101 @@ lmdeploy chat /root/internlm2-chat-1_8b
 - 计算密集（compute-bound）: 指推理过程中，绝大部分时间消耗在数值计算上；针对计算密集型场景，可以通过使用更快的硬件计算单元来提升计算速。
 - 访存密集（memory-bound）: 指推理过程中，绝大部分时间消耗在数据读取上；针对访存密集型场景，一般通过减少访存次数、提高计算访存比或降低访存量来优化。
 
+常见的 LLM 模型由于 Decoder Only 架构的特性，实际推理时大多数的时间都消耗在了逐 Token 生成阶段（Decoding 阶段），是典型的访存密集型场景。   
 
+如何优化 LLM 模型推理中的访存密集问题呢？   
+- **KV8量化**
+    - KV8量化是指将逐 Token（Decoding）生成过程中的上下文 K 和 V 中间结果进行 INT8 量化（计算时再反量化），以降低生成过程中的显存占用。
+- **W4A16量化**
+    - 将 FP16 的模型权重量化为 INT4，Kernel 计算时，访存量直接降为 FP16 模型的 1/4，大幅降低了访存成本。Weight Only 是指仅量化权重，数值计算依然采用 FP16（需要将 INT4 权重反量化）。
  
-  
+**3.1 设置最大KV Cache缓存大小** 
+ KV Cache是一种缓存技术，通过存储键值对的形式来复用计算结果，以达到提高性能和降低内存消耗的目的。在大规模训练和推理中，KV Cache可以显著减少重复计算量，从而提升模型的推理速度。   
+理想情况下，KV Cache全部存储于显存，以加快访存速度。当显存空间不足时，也可以将KV Cache放在内存，通过缓存管理器控制将当前需要使用的数据放入显存。   
+
+模型在运行时，占用的显存可大致分为三部分：模型参数本身占用的显存、KV Cache占用的显存，以及中间运算结果占用的显存。   
+LMDeploy的KV Cache管理器可以通过设置`--cache-max-entry-count`参数，控制KV缓存**占用剩余显存**的最大比例。默认的比例为0.8。   
+
+下面通过几个例子，来看一下调整--cache-max-entry-count参数的效果。首先保持不加该参数（默认0.8），运行1.8B模型。   
+```
+lmdeploy chat /root/internlm2-chat-1_8b
+```
+
+与模型对话，查看右上角资源监视器中的显存占用情况。   
+
+![](./LMDeploy14.png)   
+
+此时显存占用为7856MB。下面，改变`--cache-max-entry-count`参数，设为0.5。   
+```
+lmdeploy chat /root/internlm2-chat-1_8b --cache-max-entry-count 0.5
+```
+
+与模型对话，再次查看右上角资源监视器中的显存占用情况。   
+
+![](./LMDeploy15.png)   
+
+看到显存占用明显降低，变为6608M。   
+
+下面来一波“极限”，把`--cache-max-entry-count`参数设置为0.01，约等于禁止KV Cache占用显存。   
+
+```
+lmdeploy chat /root/internlm2-chat-1_8b --cache-max-entry-count 0.01
+```
+
+![](./LMDeploy16.png)    
+
+然后与模型对话，可以看到，此时显存占用仅为4560MB，代价是会降低模型推理速度。   
 
 
- 
+**3.2 使用W4A16量化**   
+
+LMDeploy使用AWQ算法，实现模型4bit权重量化。推理引擎TurboMind提供了非常高效的4bit推理cuda kernel，性能是FP16的2.4倍以上。它支持以下NVIDIA显卡：   
+- 图灵架构（sm75）：20系列、T4
+- 安培架构（sm80,sm86）：30系列、A10、A16、A30、A100
+- Ada Lovelace架构（sm90）：40 系列
+
+ 运行前，首先安装一个依赖库。   
+ ```
+pip install einops==0.7.0
+```
+
+仅需执行一条命令，就可以完成模型量化工作。   
+```
+lmdeploy lite auto_awq \
+   /root/internlm2-chat-1_8b \
+  --calib-dataset 'ptb' \
+  --calib-samples 128 \
+  --calib-seqlen 1024 \
+  --w-bits 4 \
+  --w-group-size 128 \
+  --work-dir /root/internlm2-chat-1_8b-4bit
+```
+
+运行时间较长，请耐心等待。
+**量化工作结束后，新的HF模型被保存到`internlm2-chat-1_8b-4bit`目录。**
+
+运行`ls` 可以查看已经量化好的模型`internlm2-chat-1_8b-4bi`   
+
+![](./LMDeploy18.png)  
+
+下面使用Chat功能运行W4A16量化后的模型。   
+```
+lmdeploy chat /root/internlm2-chat-1_8b-4bit --model-format awq
+```
+为了更加明显体会到W4A16的作用，我们将KV Cache比例再次调为0.01，查看显存占用情况。   
+```
+lmdeploy chat /root/internlm2-chat-1_8b-4bit --model-format awq --cache-max-entry-count 0.01
+```
+
+可以看到，显存占用变为2472MB，明显降低。  
+![](./LMDeploy19.png)    
+
+**拓展内容**：有关LMDeploy的lite功能的更多参数可通过-h命令查看。
+```
+ lmdeploy lite -h
+```
+
+
  ## 第4课 作业     
 
 ### 基础作业（结营必做）
@@ -222,7 +318,7 @@ lmdeploy chat /root/internlm2-chat-1_8b
      ![](./LMDeploy10.png)
 
 - 以命令行方式与模型对话
-  - Dennis作业详见 笔记2.4 使用LMDeploy与模型对话：
+  Dennis作业详见 笔记2.4 使用LMDeploy与模型对话：
   - 激活创建好的conda环境：`conda activate lmdeploy`
   - 执行如下命令运行下载的1.8B模型：`lmdeploy chat /root/internlm2-chat-1_8b`
   - 与模型对话截图：
@@ -232,7 +328,20 @@ lmdeploy chat /root/internlm2-chat-1_8b
  ### 进阶作业   
  
 完成以下任务，并将实现过程记录截图：
+
 - 设置KV Cache最大占用比例为0.4，开启W4A16量化，以命令行方式与模型对话。（优秀学员必做）
+
+下面，改变`--cache-max-entry-count`参数，设为0.4.
+```
+lmdeploy chat /root/internlm2-chat-1_8b --cache-max-entry-count 0.4
+```
+ ![](./LMDeploy17.1.png)   
+![](./LMDeploy17.2.png) 
+![](./LMDeploy17.3.png) 
+ 
+此时显存占用为6192MB.
+
+
 - 以API Server方式启动 lmdeploy，开启 W4A16量化，调整KV Cache的占用比例为0.4，分别使用命令行客户端与Gradio网页客户端与模型对话。（优秀学员）
 - 使用W4A16量化，调整KV Cache的占用比例为0.4，使用Python代码集成的方式运行internlm2-chat-1.8b模型。（优秀学员必做）
 - 使用 LMDeploy 运行视觉多模态大模型 llava gradio demo （优秀学员必做）
