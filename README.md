@@ -194,6 +194,7 @@ lmdeploy chat /root/internlm2-chat-1_8b
 - 配置lmdeploy运行环境
   
   Dennis作业，详见笔记1.LMDeploy环境部署：
+  - 创建开发机：选择镜像`Cuda12.2-conda` 选择`10% A100*1GPU`
   - 创建`conda`环境： `studio-conda -t lmdeploy -o pytorch-2.1.2`
   - 激活刚创建的虚拟环境： `conda activate lmdeploy`
   - 安装0.3.0版本的lmdeploy：`pip install lmdeploy[all]==0.3.0`
