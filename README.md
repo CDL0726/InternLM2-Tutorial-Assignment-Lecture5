@@ -575,11 +575,33 @@ lmdeploy serve api_client http://localhost:23333
 
 运行后，可以通过命令行窗口直接与模型对话：    
 
+![](./lmdeploy33.png)   
 
+**用Gradio网页客户端与模型对话**    
 
-**用Gradio网页客户端与模型对话**   
+- 关闭刚刚的VSCode终端，但服务器端的终端不要关闭。   
+- 新建一个VSCode终端，激活conda环境 `conda activate lmdeploy`。   
+- 使用Gradio作为前端，启动网页客户端。   
+```
+lmdeploy serve gradio http://localhost:23333 \
+    --server-name 0.0.0.0 \
+    --server-port 6006
+```
 
+![](./lmdeploy34.png)    
 
+- 运行命令后，网页客户端启动。在windows电脑本地新建一个powershell终端，新开一个转发端口：   
+```
+ssh -CNg -L 6006:127.0.0.1:6006 root@ssh.intern-ai.org.cn -p 42978  
+```
+
+- 打开浏览器，访问地址`http://0.0.0.0:6006`
+
+![](./lmdeploy35.png)  
+
+- 然后就可以与模型进行对话:
+
+![](./lmdeploy36.png)    
 
 
 - 使用W4A16量化，调整KV Cache的占用比例为0.4，使用Python代码集成的方式运行internlm2-chat-1.8b模型。（优秀学员必做）
