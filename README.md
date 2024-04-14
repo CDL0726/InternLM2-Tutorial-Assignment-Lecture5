@@ -431,7 +431,7 @@ print(response)
 ```
 python /root/pipeline.py
 ```
-![](./lmdeploy30.png)     
+![](./LMDeploy30.png)     
 
 5.2 向TurboMind后端传递参数    
 
@@ -458,12 +458,9 @@ print(response)
 python /root/pipeline_kv.py
 ```
 
-得到输出结果：   
+得到输出结果： 
 
-![](./lmdeploy31.png)  
-
-
-
+![](./LMDeploy31.png) 
 
 
  ## 第4课 作业     
@@ -623,7 +620,7 @@ print(response)
 保存后运行python代码：`python /root/pipeline_kv.py`   
 得到输出结果：
 
-![](./LMDeploy30.png) 
+![](./LMDeploy31.png) 
 
 
 - 使用 LMDeploy 运行视觉多模态大模型 llava gradio demo （优秀学员必做）
