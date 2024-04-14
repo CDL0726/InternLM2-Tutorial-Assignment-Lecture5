@@ -399,6 +399,72 @@ ssh -CNg -L 6006:127.0.0.1:6006 root@ssh.intern-ai.org.cn -p 42978
 ![](./LMDeploy29.png) 
 
 
+**5.Python代码集成**   
+
+在开发项目时，有时我们需要将大模型推理集成到Python代码里面。   
+
+5.1 Python代码集成运行1.8B模型   
+
+首先激活conda环境: `conda activate lmdeploy`   
+
+新建Python源代码文件pipeline.py。   
+```
+touch /root/pipeline.py
+```
+
+打开pipeline.py，填入以下内容。    
+```
+from lmdeploy import pipeline
+
+pipe = pipeline('/root/internlm2-chat-1_8b')
+response = pipe(['Hi, pls intro yourself', '上海是'])
+print(response)
+```
+
+**代码解读**：\   
+- 第1行，引入lmdeploy的pipeline模块 \
+- 第3行，从目录“./internlm2-chat-1_8b”加载HF模型 \
+- 第4行，运行pipeline，这里采用了批处理的方式，用一个列表包含两个输入，lmdeploy同时推理两个输入，产生两个输出结果，结果返回给response \
+- 第5行，输出response
+ 
+保存后运行代码文件：   
+```
+python /root/pipeline.py
+```
+![](./lmdeploy30.png)     
+
+5.2 向TurboMind后端传递参数    
+
+在第3章，我们通过向lmdeploy传递附加参数，实现模型的量化推理，及设置KV Cache最大占用比例。在Python代码中，可以通过创建TurbomindEngineConfig，向lmdeploy传递参数。   
+
+以设置KV Cache占用比例为例，新建python文件    
+`pipeline_kv.py`。    
+
+打开`pipeline_kv.py`，填入如下内容：   
+```
+from lmdeploy import pipeline, TurbomindEngineConfig
+
+# 调低 k/v cache内存占比调整为总显存的 20%
+backend_config = TurbomindEngineConfig(cache_max_entry_count=0.2)
+
+pipe = pipeline('/root/internlm2-chat-1_8b',
+                backend_config=backend_config)
+response = pipe(['Hi, pls intro yourself', '上海是'])
+print(response)
+```
+
+保存后运行python代码：    
+```
+python /root/pipeline_kv.py
+```
+
+得到输出结果：   
+
+![](./lmdeploy31.png)  
+
+
+
+
 
  ## 第4课 作业     
 
@@ -442,9 +508,11 @@ ssh -CNg -L 6006:127.0.0.1:6006 root@ssh.intern-ai.org.cn -p 42978
 
 - 设置KV Cache最大占用比例为0.4，开启W4A16量化，以命令行方式与模型对话。（优秀学员必做）
 
-下面，改变`--cache-max-entry-count`参数，设为0.4.
+在基础作业的基础之上， 下面改变`--cache-max-entry-count`参数，设为0.4.   
+
 ```
 lmdeploy chat /root/internlm2-chat-1_8b --cache-max-entry-count 0.4
+
 ```
  ![](./LMDeploy17.1.png)   
 ![](./LMDeploy17.2.png) 
@@ -469,14 +537,44 @@ lmdeploy lite auto_awq \
   --work-dir /root/internlm2-chat-1_8b-4bit
 ```
 
-使用Chat功能运行W4A16量化后的模型, 将KV Cache比例再次调为0.4；   
+使用Chat功能运行W4A16量化后的模型, 将KV Cache比例调为0.4；   
 ```
 lmdeploy chat /root/internlm2-chat-1_8b-4bit --model-format awq --cache-max-entry-count 0.4
 ```
 
+以命令行方式与模型对话截图如下： 
 
+![](./LMDeploy32.1.png)   
+![](./LMDeploy32.2.png)    
 
 - 以API Server方式启动 lmdeploy，开启 W4A16量化，调整KV Cache的占用比例为0.4，分别使用命令行客户端与Gradio网页客户端与模型对话。（优秀学员）
+
+通过以下命令启动API服务器，推理`internlm2-chat-1_8b-4bit`模型：
+
+```
+lmdeploy serve api_server \
+    /root/internlm2-chat-1_8b-4bit \
+    --model-format hf \
+    --quant-policy 0 \
+    --server-name 0.0.0.0 \
+    --server-port 23333 \
+    --tp 1
+```
+
+**用命令行客户端与模型对话**
+
+运行命令行客户端：    
+```
+lmdeploy serve api_client http://localhost:23333
+```
+
+运行后，可以通过命令行窗口直接与模型对话：    
+
+
+
+**用Gradio网页客户端与模型对话**   
+
+
 
 
 - 使用W4A16量化，调整KV Cache的占用比例为0.4，使用Python代码集成的方式运行internlm2-chat-1.8b模型。（优秀学员必做）
