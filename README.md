@@ -508,7 +508,7 @@ python /root/pipeline_kv.py
 
 - 设置KV Cache最大占用比例为0.4，开启W4A16量化，以命令行方式与模型对话。（优秀学员必做）
 
-在基础作业的基础之上， 下面改变`--cache-max-entry-count`参数，设为0.4.   
+  在基础作业的基础之上， 下面改变`--cache-max-entry-count`参数，设为0.4.   
 
 ```
 lmdeploy chat /root/internlm2-chat-1_8b --cache-max-entry-count 0.4
@@ -518,14 +518,14 @@ lmdeploy chat /root/internlm2-chat-1_8b --cache-max-entry-count 0.4
 ![](./LMDeploy17.2.png) 
 ![](./LMDeploy17.3.png) 
  
-此时显存占用为6192MB.
+  此时显存占用为6192MB.
 
-开启W4A16量化，首先安装一个依赖库：
+  开启W4A16量化，首先安装一个依赖库：
 ```
 pip install einops==0.7.0
 ```
 
-执行下列一条命令，完成模型的量化工作：    
+  执行下列一条命令，完成模型的量化工作：    
 ```
 lmdeploy lite auto_awq \
    /root/internlm2-chat-1_8b \
