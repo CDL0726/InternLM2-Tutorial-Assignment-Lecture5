@@ -607,7 +607,7 @@ ssh -CNg -L 6006:127.0.0.1:6006 root@ssh.intern-ai.org.cn -p 42978
 - 使用W4A16量化，调整KV Cache的占用比例为0.4，使用Python代码集成的方式运行internlm2-chat-1.8b模型。（优秀学员必做）
    
 首先激活conda环境: `conda activate lmdeploy`   
-新建python文件`pipeline_kv.py: `touch /root/pipeline_kv.py`   
+新建python文件pipeline_kv.py: `touch /root/pipeline_kv.py`   
 打开pipeline_kv.py，填入如下内容：   
 ```
 from lmdeploy import pipeline, TurbomindEngineConfig
