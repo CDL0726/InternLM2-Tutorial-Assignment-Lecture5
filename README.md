@@ -320,12 +320,84 @@ lmdeploy serve api_server \
 
 其中，model-format、quant-policy这些参数是与第三章中量化推理模型一致的；server-name和server-port表示API服务器的服务IP与服务端口；tp参数表示并行数量（GPU数量）。
 
-通过运行以上指令，我们成功启动了API服务器，请勿关闭该窗口，后面我们要新建客户端连接该服务。    
+通过运行以上指令，我们成功启动了API服务器，请勿关闭该窗口，后面我们要新建客户端连接该服务。
+
+模型运行的窗口如下：   
+![](./LMDeploy21.png)    
 
 可以通过运行一下指令，查看更多参数及使用方法：    
 ```
 lmdeploy serve api_server -h
 ```
+用`Win+R` 打开Windows 的 PowerShell， 输入下列命令：
+```
+ssh -CNg -L 23333:127.0.0.1:23333 root@ssh.intern-ai.org.cn -p 42978
+```
+
+ssh 端口号就是下面图片里的 42978，请替换为你自己的。   
+
+可以直接打开http://{host}:23333查看接口的具体使用说明，如下图所示:    
+
+![](./LMDeploy22.png)  
+
+**4.2 命令行客户端连接API服务器**   
+
+在“4.1”中，我们在终端里新开了一个API服务器。    
+
+本节中，我们要新建一个命令行客户端去连接API服务器。首先通过VS Code新建一个终端：   
+
+![](./LMDeploy23.png)     
+
+激活conda环境。    
+```
+conda activate lmdeploy
+```
+
+![](./LMDeploy24.png)    
+
+运行命令行客户端：    
+```
+lmdeploy serve api_client http://localhost:23333
+```
+
+运行后，可以通过命令行窗口直接与模型对话：   
+
+![](./LMDeploy25.png)   
+
+现在使用的架构是这样的：   
+
+![](./LMDeploy26.png)     
+
+**4.3 网页客户端连接API服务器**  
+
+关闭刚刚的VSCode终端，但服务器端的终端不要关闭。
+
+新建一个VSCode终端，激活conda环境: `conda activate lmdeploy`   
+
+使用Gradio作为前端，启动网页客户端。   
+```
+lmdeploy serve gradio http://localhost:23333 \
+    --server-name 0.0.0.0 \
+    --server-port 6006
+```
+
+![](./LMDeploy27.png)    
+
+运行命令后，网页客户端启动。在windows电脑本地新建一个powershell终端，新开一个转发端口：   
+```
+ssh -CNg -L 6006:127.0.0.1:6006 root@ssh.intern-ai.org.cn -p 42978
+```
+
+打开浏览器，访问地址`http://127.0.0.1:6006`   
+
+然后就可以与模型进行对话了！
+
+![](./LMDeploy28.png)     
+
+现在使用的架构是这样的：   
+
+![](./LMDeploy29.png) 
+
 
 
  ## 第4课 作业     
@@ -380,8 +452,38 @@ lmdeploy chat /root/internlm2-chat-1_8b --cache-max-entry-count 0.4
  
 此时显存占用为6192MB.
 
+开启W4A16量化，首先安装一个依赖库：
+```
+pip install einops==0.7.0
+```
+
+执行下列一条命令，完成模型的量化工作：    
+```
+lmdeploy lite auto_awq \
+   /root/internlm2-chat-1_8b \
+  --calib-dataset 'ptb' \
+  --calib-samples 128 \
+  --calib-seqlen 1024 \
+  --w-bits 4 \
+  --w-group-size 128 \
+  --work-dir /root/internlm2-chat-1_8b-4bit
+```
+
+使用Chat功能运行W4A16量化后的模型, 将KV Cache比例再次调为0.4；   
+```
+lmdeploy chat /root/internlm2-chat-1_8b-4bit --model-format awq --cache-max-entry-count 0.4
+```
+
+
 
 - 以API Server方式启动 lmdeploy，开启 W4A16量化，调整KV Cache的占用比例为0.4，分别使用命令行客户端与Gradio网页客户端与模型对话。（优秀学员）
+
+
 - 使用W4A16量化，调整KV Cache的占用比例为0.4，使用Python代码集成的方式运行internlm2-chat-1.8b模型。（优秀学员必做）
+
+
+
 - 使用 LMDeploy 运行视觉多模态大模型 llava gradio demo （优秀学员必做）
+
+
 - 将 LMDeploy Web Demo 部署到 [OpenXLab](../tools/openxlab-deploy/) （OpenXLab cuda 12.2 的镜像还没有 ready，可先跳过，一周之后再来做）
