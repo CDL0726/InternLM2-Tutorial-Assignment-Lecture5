@@ -554,7 +554,7 @@ lmdeploy chat /root/internlm2-chat-1_8b-4bit --model-format awq --cache-max-entr
 ```
 lmdeploy serve api_server \
     /root/internlm2-chat-1_8b-4bit \
-    --model-format hf \
+    --model-format awq \
     --quant-policy 0 \
     --server-name 0.0.0.0 \
     --server-port 23333 \
