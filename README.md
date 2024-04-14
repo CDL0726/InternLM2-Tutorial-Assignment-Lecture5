@@ -563,7 +563,12 @@ lmdeploy serve api_server \
 
 **用命令行客户端与模型对话**
 
-运行命令行客户端：    
+在上面，我们在终端里新开了一个API服务器。    
+
+我们要新建一个命令行客户端去连接API服务器。
+- 首先通过VS Code新建一个终端，   
+- 然后激活conda环境`conda activate lmdeploy`
+- 运行命令行客户端：    
 ```
 lmdeploy serve api_client http://localhost:23333
 ```
