@@ -621,9 +621,9 @@ response = pipe(['Hi, pls intro yourself', '上海是'])
 print(response)
 ```
 保存后运行python代码：`python /root/pipeline_kv.py`   
-得到输出结果：   
+得到输出结果：
 
-![](./LMDeploy37.png) 
+![](./LMDeploy30.png) 
 
 
 - 使用 LMDeploy 运行视觉多模态大模型 llava gradio demo （优秀学员必做）
