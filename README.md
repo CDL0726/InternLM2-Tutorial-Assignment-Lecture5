@@ -575,7 +575,7 @@ lmdeploy serve api_client http://localhost:23333
 
 运行后，可以通过命令行窗口直接与模型对话：    
 
-![](./lmdeploy33.png)   
+![](./LMDeploy33.png)   
 
 **用Gradio网页客户端与模型对话**    
 
@@ -588,7 +588,7 @@ lmdeploy serve gradio http://localhost:23333 \
     --server-port 6006
 ```
 
-![](./lmdeploy34.png)    
+![](./LMDeploy34.png)   
 
 运行命令后，网页客户端启动。在windows电脑本地新建一个powershell终端，新开一个转发端口：   
 ```
@@ -597,15 +597,33 @@ ssh -CNg -L 6006:127.0.0.1:6006 root@ssh.intern-ai.org.cn -p 42978
 
 打开浏览器，访问地址`http://0.0.0.0:6006`
 
-![](./lmdeploy35.png)  
+![](./LMDeploy35.png) 
 
 然后就可以与模型进行对话:
 
-![](./lmdeploy36.png)    
+![](./LMDeploy36.png)   
 
 
 - 使用W4A16量化，调整KV Cache的占用比例为0.4，使用Python代码集成的方式运行internlm2-chat-1.8b模型。（优秀学员必做）
+   
+首先激活conda环境: `conda activate lmdeploy`   
+新建python文件`pipeline_kv.py: `touch /root/pipeline_kv.py`   
+打开pipeline_kv.py，填入如下内容：   
+```
+from lmdeploy import pipeline, TurbomindEngineConfig
 
+# 调低 k/v cache内存占比调整为总显存的 40%
+backend_config = TurbomindEngineConfig(cache_max_entry_count=0.4)
+
+pipe = pipeline('/root/internlm2-chat-1_8b',
+                backend_config=backend_config)
+response = pipe(['Hi, pls intro yourself', '上海是'])
+print(response)
+```
+保存后运行python代码：`python /root/pipeline_kv.py`   
+得到输出结果：   
+
+![](./LMDeploy37.png) 
 
 
 - 使用 LMDeploy 运行视觉多模态大模型 llava gradio demo （优秀学员必做）
