@@ -7,7 +7,7 @@
  [第4课 文档](https://github.com/InternLM/Tutorial/blob/camp2/lmdeploy/README.md)    
  [第4课 作业](https://github.com/InternLM/Tutorial/blob/camp2/lmdeploy/homework.md)    
 
- ## 第4课 笔记   
+## 第4课 笔记   
 
 ### 模型部署     
 
@@ -462,8 +462,37 @@ python /root/pipeline_kv.py
 
 ![](./LMDeploy31.png) 
 
+**6. 拓展部分**    
 
- ## 第4课 作业     
+6.1 使用LMDeploy运行视觉多模态大模型llava   
+
+LMDeploy支持了llava多模态模型，下面演示使用pipeline推理`llava-v1.6-7b`。   
+
+首先激活conda环境: `conda activate lmdeploy`   
+安装llava依赖库: `pip install git+https://github.com/haotian-liu/LLaVA.git@4e2277a060da264c4f21b364c867cc622c945874`   
+新建一个python文件，比如pipeline_llava.py: `touch /root/pipeline_llava.py`    
+打开pipeline_llava.py，填入内容如下： 
+```
+from lmdeploy.vl import load_image
+from lmdeploy import pipeline, TurbomindEngineConfig
+
+
+backend_config = TurbomindEngineConfig(session_len=8192) # 图片分辨率较高时请调高session_len
+# pipe = pipeline('liuhaotian/llava-v1.6-vicuna-7b', backend_config=backend_config) 非开发机运行此命令
+pipe = pipeline('/share/new_models/liuhaotian/llava-v1.6-vicuna-7b', backend_config=backend_config)
+
+image = load_image('https://raw.githubusercontent.com/open-mmlab/mmdeploy/main/tests/data/tiger.jpeg')
+response = pipe(('describe this image', image))
+print(response)
+```
+
+保存后运行pipeline: `python /root/pipeline_llava.py`   
+得到输出结果：   
+
+![](./LMDeploy37.png)   
+
+
+## 第4课 作业     
 
 ### 基础作业（结营必做）
 完成以下任务，并将实现过程记录截图：    
@@ -624,6 +653,40 @@ print(response)
 
 
 - 使用 LMDeploy 运行视觉多模态大模型 llava gradio demo （优秀学员必做）
+
+新建python文件gradio_llava.py : `touch /root/gradio_llava.py`   
+打开文件，填入以下内容：
+```
+import gradio as gr
+from lmdeploy import pipeline, TurbomindEngineConfig
+
+
+backend_config = TurbomindEngineConfig(session_len=8192) # 图片分辨率较高时请调高session_len
+# pipe = pipeline('liuhaotian/llava-v1.6-vicuna-7b', backend_config=backend_config) 非开发机运行此命令
+pipe = pipeline('/share/new_models/liuhaotian/llava-v1.6-vicuna-7b', backend_config=backend_config)
+
+def model(image, text):
+    if image is None:
+        return [(text, "请上传一张图片。")]
+    else:
+        response = pipe((text, image)).text
+        return [(text, response)]
+
+demo = gr.Interface(fn=model, inputs=[gr.Image(type="pil"), gr.Textbox()], outputs=gr.Chatbot())
+demo.launch()
+```
+
+运行python程序: `python /root/gradio_llava.py`  
+通过ssh转发一下7860端口: 
+```
+ssh -CNg -L 7860:127.0.0.1:7860 root@ssh.intern-ai.org.cn -p 42978
+```
+
+通过浏览器访问: `http://127.0.0.1:7860`   
+
+可以使用啦:
+
+![](./LMDeploy38.png)   
 
 
 - 将 LMDeploy Web Demo 部署到 [OpenXLab](../tools/openxlab-deploy/) （OpenXLab cuda 12.2 的镜像还没有 ready，可先跳过，一周之后再来做）
