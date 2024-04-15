@@ -654,6 +654,9 @@ print(response)
 
 - 使用 LMDeploy 运行视觉多模态大模型 llava gradio demo （优秀学员必做）
 
+首先激活conda环境: `conda activate lmdeploy`   
+安装llava依赖库: `pip install git+https://github.com/haotian-liu/LLaVA.git@4e2277a060da264c4f21b364c867cc622c945874` 
+
 新建python文件gradio_llava.py : `touch /root/gradio_llava.py`   
 打开文件，填入以下内容：
 ```
