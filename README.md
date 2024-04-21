@@ -1,15 +1,15 @@
-# InternLM2-Tutorial-Assignment-Lecture 4
-# Lecture 4
-# 第4课 LMDeploy 量化部署 LLM&VLM实战    
+# InternLM2-Tutorial-Assignment-Lecture 5
+# Lecture 5
+# 第5课 LMDeploy 量化部署 LLM&VLM实战    
  2024.4.9 安泓郡  
  [LMDeploy](https://github.com/InternLM/LMDeploy)    
  [第4课 视频](https://www.bilibili.com/video/BV1tr421x75B/)    
  [第4课 文档](https://github.com/InternLM/Tutorial/blob/camp2/lmdeploy/README.md)    
  [第4课 作业](https://github.com/InternLM/Tutorial/blob/camp2/lmdeploy/homework.md)    
 
-## 第4课 笔记   
+# 第5课 笔记   
 
-### 模型部署     
+## 模型部署     
 
 - 定义：模型部署就是将训练好的深度学习模型在特定环境中运行的过程。
 - 场景：
@@ -21,7 +21,7 @@
   - 访存瓶颈 大模型推理“访存密集”型任务   
   - 动态请求  请求量 时间不确定   
 
-### 模型部署方法    
+## 模型部署方法    
 
 - 模型剪枝(Pruning)
 - 知识蒸馏(Knowledge Distillation, KD)
@@ -31,7 +31,7 @@
 ![](./LMDeploy2.png)
 ![](./LMDeploy3.png)
 
-### **LMDeploy**   
+## **LMDeploy**   
 
 - LMDeploy涵盖了LLM任务的全套轻量化、部署和服务解决方案；
 - 核心功能：
@@ -49,9 +49,9 @@
 ![](./LMDeploy8.png)
 
 
-### 动手实践 - 安装、部署、量化     
+## 动手实践 - 安装、部署、量化     
 
-#### **1. LMDeploy环境部署**     
+### **1. LMDeploy环境部署**     
 
 1.1 创建开发机
 选择镜像`Cuda12.2-conda`；选择`10% A100*1GPU`；点击“立即创建”。   
@@ -73,7 +73,7 @@ conda activate lmdeploy
 pip install lmdeploy[all]==0.3.0
 ```   
 
-#### **2. LMDeploy模型对话(chat)**    
+### **2. LMDeploy模型对话(chat)**    
 
 2.1 Huggingface与TurboMind   
 
@@ -185,7 +185,7 @@ lmdeploy chat /root/internlm2-chat-1_8b
 lmdeploy chat -h
 ```
 
-#### **3. LMDeploy模型量化(lite)**   
+### **3. LMDeploy模型量化(lite)**   
 
 主要介绍如何对模型进行量化。主要包括 KV8量化和W4A16量化。   
 
@@ -288,7 +288,7 @@ lmdeploy chat /root/internlm2-chat-1_8b-4bit --model-format awq --cache-max-entr
  lmdeploy lite -h
 ```
 
-#### **4. LMDeploy服务(serve)**   
+### **4. LMDeploy服务(serve)**   
 
 在第二章和第三章，我们都是在本地直接推理大模型，这种方式成为本地部署。   
 在生产环境下，我们有时会将大模型封装为API接口服务，供客户端访问。
@@ -492,9 +492,9 @@ print(response)
 ![](./LMDeploy37.png)   
 
 
-## 第4课 作业     
+# 第5课 作业     
 
-### 基础作业（结营必做）
+## 基础作业（结营必做）
 完成以下任务，并将实现过程记录截图：    
 
 - 配置lmdeploy运行环境
@@ -528,7 +528,7 @@ print(response)
      ![](./LMDeploy12.png)
      ![](./LMDeploy13.png)
      
- ### 进阶作业   
+ ## 进阶作业   
  
 完成以下任务，并将实现过程记录截图：
 
